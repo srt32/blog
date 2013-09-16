@@ -21,10 +21,6 @@
           %a{href: "/"}= data.site.title
         %hr
     .row
-      .eight.columns
-        = yield
-      / Application Javascript, safe to override
-      = javascript_include_tag "app"
       %aside.four.columns
         .panel
           %p My name is <b>Simon Taranto</b>.  I'm a student at gSchool learning the skills and tricks I need to become a web developer.  I like Ruby, maps, and whiskey.  Drop me a line at <a href="http://twitter.com/simontaranto", title="@simontaranto", target="_blank">@SimonTaranto</a>.
@@ -57,3 +53,7 @@
                 %li
                   %a{href: "#{tag_path tag}"}
                     = "#{tag} (#{articles.size})"
+      .eight.columns
+        = yield
+      / Application Javascript, safe to override
+      = javascript_include_tag "app"
