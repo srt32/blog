@@ -6,13 +6,13 @@ tags: teams,philosophy,rails
 
 ###1 week down, 23 to go.  
 
-This week was the first week of [gSchool]("http://gschool.it") Ruby Cohort 1 (actually the second cohort, learn about [zero indexing]("http://www.ruby-doc.org/core-2.0.0/Array.html")) and I'm excited to be part of a strong and diverse group of like-minded students.  My classmastes are artists, veterans, butter makers, hardware programmers, and all Denverites for at least the next 6 months.
+This week was the first week of [gSchool](http://gschool.it/ "gSchool") Ruby Cohort 1 (actually the second cohort, learn about [zero indexing](http://www.ruby-doc.org/core-2.0.0/Array.html)) and I'm excited to be part of a strong and diverse group of like-minded students.  My classmastes are artists, veterans, butter makers, hardware programmers, and all Denverites for at least the next 6 months.
 
 I enrolled in gSchool with three main **learning goals**: 1) teamwork, 2) philosophy, and 3) frameworks.
 
 
 **1. Teamwork**  
-I've been teaching myself and hacking on Rails for about a year now.  I've done the majority of my coding as the only contributor.  My [GitHub page]("http://github.com/srt32") is lonely most of the time.  I can tell from this first week that the majority of our work (if not all) will be done with a pair or a team.  I am excited to learn how to build software with others.
+I've been teaching myself and hacking on Rails for about a year now.  I've done the majority of my coding as the only contributor.  My [GitHub page](http://github.com/srt32) is lonely most of the time.  I can tell from this first week that the majority of our work (if not all) will be done with a pair or a team.  I am excited to learn how to build software with others.
 
 
 **2. Philosophy**  
