@@ -84,6 +84,10 @@ activate :syntax,
          :anchorlinenos => true,
          :linenostart => 2
 
+activate :google_analytics do |ga|
+  ga.tracking_id = 'UA-39546415-6'
+end
+
 # Build-specific configuration
 configure :build do
   # For example, change the Compass output style for deployment

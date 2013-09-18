@@ -13,3 +13,4 @@ gem "rack-contrib"
 
 gem "redcarpet"
 gem "pygments.rb"
+gem "middleman-google-analytics"
