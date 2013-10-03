@@ -51,7 +51,7 @@ ready.
 7. hjkl keys
 
   These keys (which are home keys) move your cursor left,down,up, and right
-  (respecively).
+  (respectively).
   
 ###Extra credit
 1. :%s/foo/bar/gc
