@@ -1,7 +1,7 @@
 ---
 title: "The power of hashes: why thinking about your problem matters"
 date: 2013-10-04 14:25 UTC
-tags: hash, enumerable, performance,Sales Engine, metaprogramming
+tags: hash, enumerable, performance, Sales Engine, metaprogramming
 ---
 
 We wrapped up the SalesEngine project this week and during our code review we
@@ -27,7 +27,7 @@ A description of the project is
 #####Hashes
 
 The requirements of the project are to load up half a dozen thousand-line CSV
-files, build relationships (basically building ActiveRecord sans database from
+files, build relationships (basically build ActiveRecord sans database from
 scratch) across the tables in memory, and create 'business intelligence' logic across this data.  For example,
 a user could ask for the top 3 merchants by revenue.  This question requires
 taking a look at merchants, the merchant's transactions, and those transaction's
@@ -39,17 +39,18 @@ that scanned the whole dataset using Enumerable#select.  These operations took
 a long time. During our review we drilled down and found that these large select
 calls were the performance culprit and we really needed an index.  But, how to
 do that in Ruby we thought.  Ruby
-[Hash}(http://www.ruby-doc.org/core-2.0.0/Hash.html) to the rescue!  We
+[Hash](http://www.ruby-doc.org/core-2.0.0/Hash.html) to the rescue!  We
 updated our dynamically generated finders to reference a hash holding the
 pre-grouped values we were looking for. As a result, the spec harness, which
-previsouly took 10-15 minutes, now runs in under 3 seconds.
+previsouly took 10-15 minutes, now runs in under 3 seconds (with some additional
+memory usage).
 
 #####Modules
 
 We extracted the dynamic finder methods and hash creation methods into its own
 module and etended it into each class that needed it instead of duplicating code
 across classes.  While there was some overhead on learning how to use the
-Modeuls the dozens of lines of code and duplication saved certainly paid off.
+modules the dozens of lines of code and duplication saved certainly paid off.
 Here's a [gist](https://gist.github.com/burtlo/6817579) including a simple
 example.
 
