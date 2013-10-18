@@ -11,7 +11,7 @@ $:.unshift File.expand_path("../../lib", __FILE__)
 ```
 
 This little trick allows you to be lazy with your require statements further
-down the road.  This line will load onto your path your lib library so that your
+down the road.  This line will load onto your path your lib directory so that your
 downstream require statments can look like
 
 ```
@@ -36,7 +36,7 @@ But, how does that code work?  Let's break it down.
 * `"../../lib"` is the directory path you want to add to the loadpath
 * `__FILE__` is the current file.
 
-In other words, this statment ways, from the current file (__FILE__) go up two
+In other words, this statment says, from the current file (__FILE__) go up two
 directories (../..) and into the lib folder.  Then, make this path absolute
 (expand_path) and push it into the loadpath (.unshift).
 
