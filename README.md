@@ -1,4 +1,4 @@
-# gSchool Blog = Simon
+## gSchool Blog = Simon
 
 ```
 $ git clone git@github.com:YOURNAME/gschool-blog.git
