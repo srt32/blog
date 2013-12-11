@@ -13,7 +13,7 @@ lambdas) all came together.  It was an exciting day...
 
 ###Javascript and Ajax
 I took my first deep dive into javascript a couple weeks ago doing exercises on
-[exercism.io](http://exercism.io/) and [Javascript
+[exercism.io](http://exercism.io/) and reading [Javascript
 Patterns](http://www.amazon.com/JavaScript-Patterns-Stoyan-Stefanov/dp/0596806752).
 I am proud to say the curly braces no longer scare me.  Javascript logically led
 me to Ajax in Rails.  We spent some time writing simple Ajax calls using JQuery
@@ -40,6 +40,8 @@ which is the [Ruby Rogues](http://rubyrogues.com/) next book club book.  This
 book is based in Clojure and its concepts were new but digestable because of my
 work with Javascript and my dabbling in Ruby's tokenization in [Ruby Under
 a Microscope](http://www.amazon.com/Ruby-Under-Microscope-Illustrated-Internals/dp/1593275277).
+
+A sample Clojure function that adds numbers from an array.
 
 ```
 (apply + [1 4 9 16])
@@ -166,6 +168,6 @@ Generally, this pattern is good to reach for when you have a controller action
 that is talking to more than one model.
 
 Letting all these new concepts settle in can take some time but it's really
-motivating when seemily disparate concepts all coalesce and result in understanding.
+motivating when seemingly disparate concepts all coalesce and result in understanding.
 
 Keep reading!
