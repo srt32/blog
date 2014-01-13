@@ -79,6 +79,9 @@ class Event < ActiveRecord::Base
 
   before_validation :cast_hours
 
+  validates :start_hour, presence: true, inclusion: { in: (0..23) }
+  validates :end_hour, presence: true, inclusion: { in: (0..23) }
+
   # other code...
 
   private
