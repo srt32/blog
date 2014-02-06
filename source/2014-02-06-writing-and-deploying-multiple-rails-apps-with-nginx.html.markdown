@@ -162,8 +162,27 @@ Digital Ocean's docs on setting up a server are superb.  Check out [this article
 
 XXX NGINX CONFIG FILE
 
+```
+server {
+        listen       80;
+        server_name  localhost;
+
+        location /api {
+            root /var/www/foofoberry/api/public;
+            passenger_enabled on;
+            index  index.html index.htm;
+        }
+
+        location / {
+            root /var/www/foofoberry/auth/public;
+            passenger_enabled on;
+            index index.html index.htm;
+        }
+       ....
+```
+
 ### Easy deployments
 
 See [my recent post](http://www.simontaranto.com/2014/01/23/doing-more-than-deploying-code-in-a-git-post-receive-hook.html)
-for some more details on how to make git post-receive hooks do deploymeny chores
-for you.
+for some more details on how to make git post-receive hooks to do deployment
+chores for you.
