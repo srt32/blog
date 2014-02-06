@@ -32,9 +32,9 @@ sends POST's to the API that are then sent to the Ember front end via Pusher.
           |------|         /  \
           | Auth |  --->  | DB |
           |------|         \  /
-|----|  /         \
-|User|             |-cookie-|
-|----|  \         /
+|------|  /      \
+|Client|         |-cookie-|
+|------|  \      /
           |-------- |         |-------|       /  \
           |Dashboard|  -gem-> |  API  | ---> | DB |
           |-------- |         |-------|       \  /
