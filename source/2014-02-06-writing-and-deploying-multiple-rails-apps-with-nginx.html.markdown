@@ -4,15 +4,22 @@ date: 2014-02-06 05:01 UTC
 tags: Rails, Nginx, VPS
 ---
 
-INTRO
-
-
-### Our Task
-
-Project overview:
-http://tutorials.jumpstartlab.com/projects/feed\_engine/feed\_engine.html
+For our last project, my team built a real time dashboard for development teams
+so managers and team managers can have an at a glance look at what's happening
+in a project.  A user can create a project and link up Github repos, Pivotal
+Tracker Projects, Travis CI builds, and Code Climate scores.  We built the app
+using Services Oriented Architecture and learned quite a bit along the way.  We
+built 3 Rails apps, a Sinatra app, and gem.  We used Nginx and Passenger on
+a Digital Ocean VPS to make it live.
 
 ### Architecture
+Below is a summary of the architecture.  A user comes to the site and hits the
+authentication app where they can log in via Github.  Upon successful
+authentication, a signed cookie is set and the user is seamlessly directed to the dashboard
+app where they can add projects and link accounts, which sends JSON requests to
+the API backend via a custom gem.  When new events (commits, completed stories,
+failing builds, etc) occur the dashboard updates in real time by parsing webhook
+payloads from the various external services via the Receiver Sinatra app.
 
 ```
 
@@ -42,16 +49,28 @@ http://tutorials.jumpstartlab.com/projects/feed\_engine/feed\_engine.html
 
 #### The Code:
 
-- Authentication
-- Frontend
-- API
-- Callback Receiver
-- Gem
-- Demo Bot
-- Helper Scripts
+All of our code can be found on our
+[organization's](https://github.com/foofoberry) page.  Each particular app and
+process had it's own repo, which are summarized below:
+
+- Authentication: [https://github.com/FooFoBerry/feed\_engine\_auth](https://github.com/FooFoBerry/feed_engine_auth)
+- Frontend / Dashboard: [https://github.com/FooFoBerry/feed\_engine\_front\_end](https://github.com/FooFoBerry/feed_engine_front_end)
+- API: [https://github.com/FooFoBerry/feed\_engine\_api](https://github.com/FooFoBerry/feed_engine_api)
+- Callback Receiver: [https://github.com/FooFoBerry/costner\_goes\_postal](https://github.com/FooFoBerry/costner_goes_postal)
+- Gem: [https://github.com/FooFoBerry/foofoberry](https://github.com/FooFoBerry/foofoberry)
+- Demo Bot: [https://github.com/FooFoBerry/api\_bot](https://github.com/FooFoBerry/api_bot)
+- Helper Scripts: [https://github.com/FooFoBerry/processes](https://github.com/FooFoBerry/processes)
 
 ### Namespacing
 
+To make all these apps work together we took the approach of using a single
+domain (with no subdomains) that utilized sub directories.  So, each app has
+its own routing namespace.  Here's how the app's namespaces broke down:
+
+- API:
+- Frontend:
+- Auth
+- Receiever
 
 ### Rack Proxy -> fail
 
