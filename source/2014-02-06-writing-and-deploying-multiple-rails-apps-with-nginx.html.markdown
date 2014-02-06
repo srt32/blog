@@ -106,9 +106,7 @@ AppName::Aplication.config.secret_key_base = 'bigjumbleofstuff'
 Here's a great post that goes into more details on how signed cookies work:
 [http://blog.bigbinary.com/2013/03/19/cookies-on-rails.html](http://blog.bigbinary.com/2013/03/19/cookies-on-rails.html).
 
-
 ### Namespacing
-
 To make all these apps work together we took the approach of using a single
 domain (with no subdomains) that utilized sub directories.  So, each app has
 its own routing namespace.  Here's how the app's namespaces broke down:
@@ -134,7 +132,8 @@ FoofoberryApi::Application.routes.draw do
 end
 ```
 
-Notice that all the routes are under `namespace :api`.  In this way, the apps
+Notice that all the routes are under `namespace :api`.  Depending on your use case,
+it could also make sense to use a scope instead of a namespace. In this way, the apps
 should be able to redirect to each other without having to know about how any of
 the other apps work.  At this point we realized we needed some way to actually
 tie all the apps together.
@@ -142,17 +141,17 @@ tie all the apps together.
 ### Rack Proxy -> fail
 
 We basically needed a reverse proxy so that an app could do its thing within
-its own routes but also be able to transfer the over to another app.  For example,
+its own routes but also be able to transfer the user over to another app.  For example,
 when a user logs into the website they are on the authentication app (at '/' route)
-but after they log in they ger redirected to '/dashboard', which is the dashboard /
-frontend app.  The auth app needs to be able to do this:
+but after they log in they get redirected to '/dashboard', which is the dashboard app.
+The auth app needs to be able to do this:
 
 ```
 redirect_to '/dashboard'
 ```
 
 Our first attempt was to set up an entirely different app that solely runs a 
-RackProxy and routes every request to the proper app depending on the routes.
+Rack::Proxy and routes every request to the proper app depending on the routes.
 We got something going with the below server:
 
 ```
@@ -174,13 +173,11 @@ end
 
 run AppProxy.new
 ```
-
-While this approach worked it was a pain to deal with because we needed to start
-an additional process locally to develop across multiple apps but more importantly,
-every request in any of the apps had to be explicitly routed out back through
-this proxy.  To achieve this requirement we added a before_action to the application
+To achieve this requirement we added a before_action to the application
 controller that hit the proxy.  You can see that implementation [here](https://github.com/FooFoBerry/feed_engine_front_end/blob/0b0460262d09eaa30daecbfcc4e0579cb9bb0df4/app/controllers/application_controller.rb).
-The problem with this approach is each app had to know about how to talk to the
+While this approach worked it was a pain to deal with because we needed to start an additional process locally to develop across multiple apps but more importantly,
+every request in any of the apps had to be explicitly routed out back through
+this proxy.  The problem with this approach is each app had to know about how to talk to the
 other apps.  This coupling seemed like a nightmare to maintain and unlikely to work
 on production so we abandonded this concept.  Onto Nginx.
 
@@ -188,7 +185,9 @@ on production so we abandonded this concept.  Onto Nginx.
 
 Digital Ocean's docs on setting up a server are superb.  Check out [this article](https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu) on how to get Rails up and running.
 
-XXX NGINX CONFIG FILE
+Once we got everything installed, we went to work on setting up the Nginx
+configuration to mimic our Rack::Proxy's functionality. It ended up looking like
+this:
 
 ```
 server {
@@ -209,8 +208,13 @@ server {
        ....
 ```
 
-### Easy deployments
+We used Passenger along side Nginx, which allowed us to delegate the responsibility
+of starting (and restarting) apps to passenger.  In other words, we didn't have
+to start up web servers manually using daemonized processes.  Passenger just magically
+worked.  I imagine it won't be that simple next time.
 
-See [my recent post](http://www.simontaranto.com/2014/01/23/doing-more-than-deploying-code-in-a-git-post-receive-hook.html)
+### Easy deployments
+To make our lives easier we wnated to be able to `git push live master` and we
+and we achieved this using git hooks. See [my recent post](http://www.simontaranto.com/2014/01/23/doing-more-than-deploying-code-in-a-git-post-receive-hook.html)
 for some more details on how to make git post-receive hooks to do deployment
 chores for you.
