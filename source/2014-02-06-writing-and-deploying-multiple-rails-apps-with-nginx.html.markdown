@@ -5,11 +5,11 @@ tags: Rails, Nginx, VPS
 ---
 
 For our last project, my team built a real time dashboard for development teams
-so managers and team managers can have an at a glance look at what's happening
+so managers and team members can have an at a glance look at what's happening
 in a project.  A user can create a project and link up Github repos, Pivotal
 Tracker Projects, Travis CI builds, and Code Climate scores.  We built the app
 using Services Oriented Architecture and learned quite a bit along the way.  We
-built 3 Rails apps, a Sinatra app, and gem.  We used Nginx and Passenger on
+built three Rails apps, a Sinatra app, and a gem.  We used Nginx and Passenger on
 a Digital Ocean VPS to make it live.
 
 ### Architecture
@@ -19,7 +19,13 @@ authentication, a signed cookie is set and the user is seamlessly directed to th
 app where they can add projects and link accounts, which sends JSON requests to
 the API backend via a custom gem.  When new events (commits, completed stories,
 failing builds, etc) occur the dashboard updates in real time by parsing webhook
-payloads from the various external services via the Receiver Sinatra app.
+payloads from the various external services via the Receiver Sinatra app, which
+sends POST's to the API that are then sent to the Ember front end via Pusher. 
+
+#### Databases
+The Authentication app has its own postgres database that holds user information (email,
+github token, and a user id).  The API app sits on top of the main postgres database
+that manages projects and their associated accounts.
 
 ```
 
@@ -61,23 +67,45 @@ process had it's own repo, which are summarized below:
 - Demo Bot: [https://github.com/FooFoBerry/api\_bot](https://github.com/FooFoBerry/api_bot)
 - Helper Scripts: [https://github.com/FooFoBerry/processes](https://github.com/FooFoBerry/processes)
 
-### Databases
-Our app has two databases.  There is one Postgres database tied to the Authentication
-app that holds User log on info (email, github token, and a user id).  Then, the
-API has another Postgres database that manages projects and associated accounts.
-
-XXX MORE INFO ON THE DATABASES
-
 ### Signed Cookies
 The user gets passed from the Authentication app to the Dashboard app.  The way
-these two apps communicate with each other is through a signed cookie.
+these two apps communicate with each other is through a signed cookie. In the LoginController
+of the Authentication app, the user is found or created and the signed cookie is set.
 
-XXX SHARED SECRET
+```
+def create
+    user = User.find_or_create_by(:uid => auth_hash["uid"]) if auth_hash
+    if user
+      cookies.signed[:user_id] = user.id
+      redirect_to dashboard_path
+    else
+      redirect_to root_path
+    end
+  end
+...
+```
+This cookie is then read by the Dashboard app:
 
-XXX Example of the cookie.
+```
+class ApplicationController < ActionController::Base
+  def current_user_id
+    @user_id ||= cookies.signed[:user_id]
+  end
+end
+```
+
+Because these cookies are signed the two apps share the same secret\_key\_base
+allowing the Dashboard app to be able to decrypt and verify the signature of
+the cookie:
+
+```
+#/config/initializers/secret_token.rb
+AppName::Aplication.config.secret_key_base = 'bigjumbleofstuff'
+```
 
 Here's a great post that goes into more details on how signed cookies work:
-http://blog.bigbinary.com/2013/03/19/cookies-on-rails.html
+[http://blog.bigbinary.com/2013/03/19/cookies-on-rails.html](http://blog.bigbinary.com/2013/03/19/cookies-on-rails.html).
+
 
 ### Namespacing
 
