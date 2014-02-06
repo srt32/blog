@@ -214,7 +214,7 @@ to start up web servers manually using daemonized processes.  Passenger just mag
 worked.  I imagine it won't be that simple next time.
 
 ### Easy deployments
-To make our lives easier we wnated to be able to `git push live master` and we
+To make our lives easier we wanted to be able to `git push live master` and we
 achieved this goal using git hooks. See [my recent post](http://www.simontaranto.com/2014/01/23/doing-more-than-deploying-code-in-a-git-post-receive-hook.html)
 for some more details on how to make git post-receive hooks to do deployment
 chores for you.
