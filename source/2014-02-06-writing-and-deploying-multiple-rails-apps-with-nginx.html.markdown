@@ -4,11 +4,12 @@ date: 2014-02-06 05:01 UTC
 tags: Rails, Nginx, VPS
 ---
 
-For our last project, my team built a real time dashboard for development teams
+For our [last project](http://tutorials.jumpstartlab.com/projects/feed_engine/feed_engine.html), 
+my team built a real time dashboard for development teams
 so managers and team members can have an at a glance look at what's happening
 in a project.  A user can create a project and link up Github repos, Pivotal
 Tracker Projects, Travis CI builds, and Code Climate scores.  We built the app
-using Services Oriented Architecture and learned quite a bit along the way.  We
+using a Services Oriented Architecture and learned quite a bit along the way.  We
 built three Rails apps, a Sinatra app, and a gem.  We used Nginx and Passenger on
 a Digital Ocean VPS to make it live.
 
@@ -21,11 +22,6 @@ the API backend via a custom gem.  When new events (commits, completed stories,
 failing builds, etc) occur the dashboard updates in real time by parsing webhook
 payloads from the various external services via the Receiver Sinatra app, which
 sends POST's to the API that are then sent to the Ember front end via Pusher. 
-
-#### Databases
-The Authentication app has its own postgres database that holds user information (email,
-github token, and a user id).  The API app sits on top of the main postgres database
-that manages projects and their associated accounts.
 
 ```
 
@@ -52,12 +48,16 @@ that manages projects and their associated accounts.
 
 ```
 
+#### Databases
+The Authentication app has its own postgres database that holds user information (email,
+github token, and a user id).  The API app sits on top of the main postgres database
+that manages projects and their associated accounts.
 
 #### The Code:
 
 All of our code can be found on our
 [organization's](https://github.com/foofoberry) page.  Each particular app and
-process had it's own repo, which are summarized below:
+process has its own repo, which are summarized below:
 
 - Authentication: [https://github.com/FooFoBerry/feed\_engine\_auth](https://github.com/FooFoBerry/feed_engine_auth)
 - Frontend / Dashboard: [https://github.com/FooFoBerry/feed\_engine\_front\_end](https://github.com/FooFoBerry/feed_engine_front_end)
@@ -94,7 +94,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-Because these cookies are signed the two apps share the same secret\_key\_base
+Because these cookies are signed, the two apps share the same secret\_key\_base
 allowing the Dashboard app to be able to decrypt and verify the signature of
 the cookie:
 
@@ -108,7 +108,7 @@ Here's a great post that goes into more details on how signed cookies work:
 
 ### Namespacing
 To make all these apps work together we took the approach of using a single
-domain (with no subdomains) that utilized sub directories.  So, each app has
+domain (with no subdomains) that utilizes sub directories.  So, each app has
 its own routing namespace.  Here's how the app's namespaces broke down:
 
 - Authentication: /
@@ -174,7 +174,7 @@ end
 run AppProxy.new
 ```
 To achieve this requirement we added a before_action to the application
-controller that hit the proxy.  You can see that implementation [here](https://github.com/FooFoBerry/feed_engine_front_end/blob/0b0460262d09eaa30daecbfcc4e0579cb9bb0df4/app/controllers/application_controller.rb).
+controller of each app that sent requests to the proxy.  You can see that implementation [here](https://github.com/FooFoBerry/feed_engine_front_end/blob/0b0460262d09eaa30daecbfcc4e0579cb9bb0df4/app/controllers/application_controller.rb).
 While this approach worked it was a pain to deal with because we needed to start an additional process locally to develop across multiple apps but more importantly,
 every request in any of the apps had to be explicitly routed out back through
 this proxy.  The problem with this approach is each app had to know about how to talk to the
@@ -209,12 +209,15 @@ server {
 ```
 
 We used Passenger along side Nginx, which allowed us to delegate the responsibility
-of starting (and restarting) apps to passenger.  In other words, we didn't have
+of starting (and restarting) apps to Passenger.  In other words, we didn't have
 to start up web servers manually using daemonized processes.  Passenger just magically
 worked.  I imagine it won't be that simple next time.
 
 ### Easy deployments
 To make our lives easier we wnated to be able to `git push live master` and we
-and we achieved this using git hooks. See [my recent post](http://www.simontaranto.com/2014/01/23/doing-more-than-deploying-code-in-a-git-post-receive-hook.html)
+achieved this goal using git hooks. See [my recent post](http://www.simontaranto.com/2014/01/23/doing-more-than-deploying-code-in-a-git-post-receive-hook.html)
 for some more details on how to make git post-receive hooks to do deployment
 chores for you.
+
+[Let me know](https://twitter.com/SimonTaranto) if you have any comments
+or questions!
