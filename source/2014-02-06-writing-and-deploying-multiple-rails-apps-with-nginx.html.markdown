@@ -61,6 +61,24 @@ process had it's own repo, which are summarized below:
 - Demo Bot: [https://github.com/FooFoBerry/api\_bot](https://github.com/FooFoBerry/api_bot)
 - Helper Scripts: [https://github.com/FooFoBerry/processes](https://github.com/FooFoBerry/processes)
 
+### Databases
+Our app has two databases.  There is one Postgres database tied to the Authentication
+app that holds User log on info (email, github token, and a user id).  Then, the
+API has another Postgres database that manages projects and associated accounts.
+
+XXX MORE INFO ON THE DATABASES
+
+### Signed Cookies
+The user gets passed from the Authentication app to the Dashboard app.  The way
+these two apps communicate with each other is through a signed cookie.
+
+XXX SHARED SECRET
+
+XXX Example of the cookie.
+
+Here's a great post that goes into more details on how signed cookies work:
+http://blog.bigbinary.com/2013/03/19/cookies-on-rails.html
+
 ### Namespacing
 
 To make all these apps work together we took the approach of using a single
@@ -140,5 +158,12 @@ on production so we abandonded this concept.  Onto Nginx.
 
 ### VPS and Nginx
 
+Digital Ocean's docs on setting up a server are superb.  Check out [this article](https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu) on how to get Rails up and running.
 
+XXX NGINX CONFIG FILE
 
+### Easy deployments
+
+See [my recent post](http://www.simontaranto.com/2014/01/23/doing-more-than-deploying-code-in-a-git-post-receive-hook.html)
+for some more details on how to make git post-receive hooks do deploymeny chores
+for you.
