@@ -21,7 +21,12 @@ time was noticeably slow and not acceptable.  What did we do?
 ### The search endpoint
 Of particular interest to this post is the Market API /search endpoint that
 allows API users and the frontend app to perform geocoded searches across the
-market data.  Sending a GET to `/api/v1/search/markets?zipcode=<search_query>`
+market data.  Sending a GET to
+
+```
+/api/v1/search/markets?zipcode=<search_query>
+```
+
 will return markets within 30 miles of the search\_query using the Google Maps
 API to geocode the query.
 
@@ -36,9 +41,8 @@ The process looked like this:
 
 1.  In one big query, geocode the search param and return all the addresses,
 which belong to a market, near that search (a single query)
-2.  Perform one query per nearby address (potentially 100's of queries) another query to get the associated
-market for that adddress
-4.  Finally, go fetch again each associated address for each market
+2.  Perform one query per nearby address (potentially 100's of queries) to get the associated market for that adddress
+3.  Finally, go fetch again each associated address for each market
 
 What?  We're doing a lot of work to begin with but then we're duplicating our
 work by finding addresses again.  Something is not right here.  Let's take
@@ -60,6 +64,8 @@ end
 
 And the code responsible for handling the search query:
 
+##### The old code
+
 ```
 class Api::V1::SearchesController < ApplicationController
 
@@ -79,19 +85,28 @@ class MarketSearchService < ActiveRecord::Base
 end
 ```
 
-An issue on the Geocoder issues list helped me out:
-https://github.com/alexreisner/geocoder/issues/294
-
+The problem is, when we call the markets method in the SearchesController we're
+loading markets with address, then in the by\_zipcode method we're narrowing
+down our addresses, followed by mapping out the markets (at the Ruby layer).
+Essentially, after all this, we end up with a bunch of markets and then when we
+finally call as_json asking it to include the address back up in the markets
+method we have to go get the addresses again because we've thrown away that
+information.  Silly! Eager loading to the rescue.
 
 ### Eager loading with Rails
-Eager loading to the rescue.
 
-Here is how [RailsGuides explains it](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations).
+We fortunately had some help from [an issue](https://github.com/alexreisner/geocoder/issues/294)
+on the geocoder's tracker. Where it was pointed out there is no direct way to
+query for associated models with a near query.  We'll have to first get the id's
+of the markets we want (a single query) and then use those market id's to filter
+down the a second query that gets markets eager loaded with addresses.  The [RailsGuides](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations)
+have a nice explanation of eager loading that I would recommend reading.
 
-what gets returned at each step
-AS_JSON
+After rejiggering things to not duplicate our work, combined with eager loading
+at the right place, we end up with the below code that runs only 2 queries and
+produces the same data we previously got with 100's of queries.
 
-Here is the updated code:
+##### The new code
 
 ```
 class Api::V1::SearchesController < ApplicationController
@@ -112,8 +127,17 @@ class MarketSearchService < ActiveRecord::Base
 
 end
 ```
+As a result of these small updates, load times dropped drastically and load on
+the server came way down.
 
 ### Make it even better
+
+There is some additional work we could do in the future if we wanted to speed
+things up even more.  Some options are:
+
 * Query caching, RailsCast on Rails model caching
 * View caching
 * Caching at both apps
+
+#### Some more reading
+* Jumpstart Lab's [tutorial on queries](http://tutorials.jumpstartlab.com/topics/performance/queries.html).
