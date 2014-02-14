@@ -68,7 +68,16 @@ An issue on the Geocoder issues list helped me out:
 https://github.com/alexreisner/geocoder/issues/294
 
 
+### Eager loading with Rails
+Eager loading to the rescue.
+
+  Here is how [RailsGuides explains
+  it](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations).
 Here is the updated code:
+
+
+AS_JSON
+
 
 ```
 class Api::V1::SearchesController < ApplicationController
@@ -89,14 +98,6 @@ class MarketSearchService < ActiveRecord::Base
 
 end
 ```
-
-AS_JSON
-
-### Eager loading with Rails
-Eager loading to the rescue.
-
-  Here is how [RailsGuides explains
-  it](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations).
 
 ### Make it even better
  Query caching, RailsCast on Rails model caching
