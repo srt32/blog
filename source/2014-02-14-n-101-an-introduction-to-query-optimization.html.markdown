@@ -30,6 +30,18 @@ logs for the Market API and see what was going on during a search request.
 With a quick look at the logs we could see that hundreds of SQL queries we're
 flying by for each search.  That's not good.
 
+It turned out that for each search we were performing a whole bunch of N+1 queries.
+The process looked like this:
+
+1.  in one big query, geocode the search param and return all the addresses,
+which belong to a market, near that search
+2.  in one query per nearby address, get all the associated markets for those addresses and
+3.  fetch again each associated address for each market
+
+What?  We're doing a lot of work to begin with but then we're duplicating our
+work by finding addresses again.  Something is not right here.  Let's take
+a look at the code.
+
 The basic underlying model structure is as follows:
 
 ```
@@ -44,19 +56,41 @@ class Address < ActiveRecord::Base
 end
 ```
 
-It turned out that for each search we were performing a whole bunch of N+1 queries.
-The process looked like this:
+And the code responsible for handling the search query:
 
-1.  in one big query, geocode the search param and return all the addresses,
-which belong to a market, near that search
-2.  in one query per nearby address, get all the associated markets for those addresses and
-3.  fetch again each associated address for each market
+XXX NEED THE OLD CODE, PRIOR TO OPTIMIZATION:
 
-What?  We're doing a lot of work to begin with but then we're duplicating our
-work by finding addresses again.  Something is not right here.  Let's take
-a look at the code.
+```
+HERE
+```
+
+An issue on the Geocoder issues list helped me out:
+https://github.com/alexreisner/geocoder/issues/294
 
 
+Here is the updated code:
+
+```
+class Api::V1::SearchesController < ApplicationController
+
+  def markets
+    markets = Market.search_by_zipcode(params[:zipcode]).as_json(:include => :address)
+    render json: markets
+  end
+
+end
+
+class MarketSearchService < ActiveRecord::Base
+
+  def self.by_zipcode(target_zipcode, radius = 30)
+    market_ids = Address.near(target_zipcode.to_s, radius).select("id").map(&:market_id)
+    markets = Market.includes(:address).where(:id => market_ids)
+  end
+
+end
+```
+
+AS_JSON
 
 ### Eager loading with Rails
 Eager loading to the rescue.
@@ -64,10 +98,7 @@ Eager loading to the rescue.
   Here is how [RailsGuides explains
   it](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations).
 
-
-as\_json is clever
-
-Make it better
+### Make it even better
  Query caching, RailsCast on Rails model caching
  View caching
  Caching at both apps
