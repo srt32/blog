@@ -40,7 +40,7 @@ cases handled and describe the various flags available for your use.
 
 This [tool](https://github.com/golang/lint) does not edit your code either but
 prints out likely style violations such as returning inside an else block
-instead of using a guard clause (as explained by [in this
+instead of using a guard clause (as explained [in this
 post](http://engineeredweb.com/blog/2014/golint/)).
 
 ## Want to learn more?
@@ -48,5 +48,5 @@ post](http://engineeredweb.com/blog/2014/golint/)).
   * Many of the non-compiler enforced 'rules' are enumerated in [Go Code Review
     Comments](https://code.google.com/p/go-wiki/wiki/CodeReviewComments)
   * Experiment with [pre-commit hooks](http://golang.org/misc/git/pre-commit)
-    that force you to use the tools.
+    that force you to use the tools
   * For next steps, explore the [race detector](http://blog.golang.org/race-detector)
